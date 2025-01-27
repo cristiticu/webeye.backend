@@ -1,5 +1,5 @@
 
-from user_account.exceptions import UserAccountNotFound, UserCreateError
+from user_account.exceptions import UserAccountNotFound, UserBusinessError
 from user_account.model import CreateUserAccount, PartialUserAccount, UserAccount, UserAccountPatch
 from user_account.persistence import UserAccountPersistence
 from passlib.context import CryptContext
@@ -13,12 +13,12 @@ class UserAccountService():
         self._users = persistence
 
     async def get_all(self):
-        accounts = await self._users.get_user_accounts()
+        accounts = await self._users.get_all()
 
         return [PartialUserAccount(**{**account.model_dump()}) for account in accounts]
 
     async def get(self, id: str):
-        account = await self._users.get_user_account(id)
+        account = await self._users.get_one(id)
 
         if account is None:
             raise UserAccountNotFound()
@@ -33,12 +33,12 @@ class UserAccountService():
             ))
 
         if account is None:
-            raise UserCreateError()
+            raise UserBusinessError("Could not create user")
 
         return PartialUserAccount(**{**account.model_dump()})
 
     async def update(self, id: str, patch: UserAccountPatch):
-        account = await self._users.get_user_account(id)
+        account = await self._users.get_one(id)
 
         if account is None:
             raise UserAccountNotFound()
@@ -52,6 +52,9 @@ class UserAccountService():
         response = await self._users.update_user_account(patched_account)
 
         if response is None:
-            raise UserCreateError("Could not update user!")
+            raise UserBusinessError("Could not update user")
 
         return PartialUserAccount(**{**response.model_dump()})
+
+    async def delete(self, id: str):
+        await self._users.delete(id)

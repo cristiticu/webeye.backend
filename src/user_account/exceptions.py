@@ -1,4 +1,4 @@
-from exceptions import ItemCreateError, ItemNotFound
+from exceptions import ItemBusinessError, ItemNotFound
 
 
 class UserAccountNotFound(ItemNotFound):
@@ -7,7 +7,7 @@ class UserAccountNotFound(ItemNotFound):
             msg=msg or "User Account not found", error_trace=error_trace)
 
 
-class UserCreateError(ItemCreateError):
+class UserBusinessError(ItemBusinessError):
     def __init__(self, msg=None, error_trace=None):
-        super(UserCreateError, self).__init__(
-            msg=msg or "Could not create user account", error_trace=error_trace)
+        super(UserBusinessError, self).__init__(
+            msg=msg or "Could not service user account request", error_trace=error_trace)

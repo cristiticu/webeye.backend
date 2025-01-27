@@ -1,9 +1,9 @@
-import psycopg
+from psycopg import Error
 from exceptions import DatabaseException
 
 
 class PsycopgGenericException(DatabaseException):
-    def __init__(self, error: psycopg.Error):
+    def __init__(self, error: Error):
         super(PsycopgGenericException, self).__init__(
             msg=f'''{error.sqlstate}:
                 hint: {error.diag.message_hint}
@@ -18,7 +18,7 @@ class PsycopgGenericException(DatabaseException):
 
 
 class PsycopgIntegrityException(DatabaseException):
-    def __init__(self, error: psycopg.Error):
+    def __init__(self, error: Error):
         super(PsycopgIntegrityException, self).__init__(
             msg=f"{error.diag.message_primary} {error.diag.message_detail}",
             error_trace=None)
