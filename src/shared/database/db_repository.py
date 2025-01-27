@@ -1,5 +1,7 @@
+from contextlib import asynccontextmanager
 from typing import Any, Callable, Generic, Sequence, TypeVar
 from psycopg import AsyncCursor, Column
+from shared.database import db_pool
 from shared.entity import Entity
 
 
@@ -24,3 +26,8 @@ class DbRepository(Generic[T]):
             return self._object_factory(dict(zip(fields, values)))
 
         return make_row
+
+    @asynccontextmanager
+    async def _cursor(self):
+        async with db_pool.cursor(self._row_factory) as cursor:
+            yield cursor
