@@ -11,7 +11,7 @@ class UserAccountPersistence(DbRepository[UserAccount]):
 
     async def insert_user_account(self, user_payload: CreateUserAccount):
         try:
-            user = await super(UserAccountPersistence, self).insert(user_payload.model_dump())
+            user = await self.insert(user_payload.model_dump())
             return user
         except ItemBusinessError as error:
             raise UserBusinessError(
@@ -19,7 +19,7 @@ class UserAccountPersistence(DbRepository[UserAccount]):
 
     async def update_user_account(self, patched_user: UserAccount):
         try:
-            user = await super(UserAccountPersistence, self).update(patched_user.model_dump())
+            user = await self.update(patched_user.model_dump())
             return user
         except ItemBusinessError as error:
             raise UserBusinessError(

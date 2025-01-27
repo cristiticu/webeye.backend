@@ -1,10 +1,9 @@
 from fastapi import APIRouter, status
-from fastapi.responses import JSONResponse
 from user_account.model import CreateUserAccount, UserAccountPatch
 from user_account.persistence import UserAccountPersistence
 from user_account.service import UserAccountService
 
-router = APIRouter(prefix="/user", tags=["user"])
+router = APIRouter(prefix="/user", tags=["User Account"])
 
 uap = UserAccountPersistence()
 service = UserAccountService(uap)

@@ -66,6 +66,11 @@ class DbRepository(Generic[T]):
                 f"Encountered psycopg exception in get one {T} at {self.__class__}\n", error.message)
 
     async def insert(self, payload: dict) -> T | None:
+        '''
+        Function will log all low level psycopg exceptions,
+        and throw an ItemBusinessError on any integrity error,
+        usually conflicting unique checks on rows
+        '''
         try:
             async with self._cursor() as cursor:
                 await cursor.execute(
@@ -91,6 +96,11 @@ class DbRepository(Generic[T]):
                 f"Encountered psycopg exception in insert {T} at {self.__class__}\n", error.message)
 
     async def update(self, patch: dict) -> T | None:
+        '''
+        Function will log all low level psycopg exceptions,
+        and throw an ItemBusinessError on any integrity error,
+        usually conflicting unique checks on rows
+        '''
         try:
             async with self._cursor() as cursor:
                 await cursor.execute(
