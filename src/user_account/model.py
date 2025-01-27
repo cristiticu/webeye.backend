@@ -13,8 +13,22 @@ class UserAccount(Entity):
     added_at: datetime
 
 
-class AddUserAccount(BaseModel):
+class PartialUserAccount(Entity):
+    email: str
+    first_name: str
+    last_name: str | None = None
+    added_at: datetime
+
+
+class CreateUserAccount(BaseModel):
     email: str
     password: str
     first_name: str
+    last_name: str | None = None
+
+
+class UserAccountPatch(BaseModel):
+    email: str | None = None
+    password: str | None = None
+    first_name: str | None = None
     last_name: str | None = None

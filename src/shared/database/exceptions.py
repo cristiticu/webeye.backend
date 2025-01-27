@@ -15,3 +15,10 @@ class PsycopgGenericException(DatabaseException):
                 table: {error.diag.table_name}
                 ''',
             error_trace=None)
+
+
+class PsycopgIntegrityException(DatabaseException):
+    def __init__(self, error: psycopg.Error):
+        super(PsycopgIntegrityException, self).__init__(
+            msg=f"{error.diag.message_primary} {error.diag.message_detail}",
+            error_trace=None)

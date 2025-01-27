@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from user_account.model import CreateUserAccount, UserAccountPatch
 from user_account.persistence import UserAccountPersistence
 from user_account.service import UserAccountService
 
@@ -17,4 +18,16 @@ async def list_users():
 @router.get("/{user_id}")
 async def get_user(user_id: str):
     user = await service.get(user_id)
+    return user
+
+
+@router.post("")
+async def create_user(user_payload: CreateUserAccount):
+    user = await service.create(user_payload)
+    return user
+
+
+@router.patch("{user_id}")
+async def update_user(user_id: str, patch: UserAccountPatch):
+    user = await service.update(user_id, patch)
     return user

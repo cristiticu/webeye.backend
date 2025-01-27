@@ -42,6 +42,16 @@ class ItemNotFound(Error):
         )
 
 
+class ItemCreateError(Error):
+    def __init__(self, *, msg=None, error_trace=None):
+        ''' Custom common class for an item creation error'''
+
+        super(ItemCreateError, self).__init__(
+            msg=msg or "Could not add item",
+            error_trace=error_trace
+        )
+
+
 def register_error_handlers(app: FastAPI):
     @app.exception_handler(CredentialsException)
     def _(_: Request, exception: CredentialsException):
@@ -54,3 +64,7 @@ def register_error_handlers(app: FastAPI):
     @app.exception_handler(ItemNotFound)
     def _(_: Request, exception: ItemNotFound):
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": exception.message})
+
+    @app.exception_handler(ItemCreateError)
+    def _(_: Request, exception: ItemCreateError):
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": exception.message})
