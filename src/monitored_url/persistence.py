@@ -7,7 +7,7 @@ from shared.database.db_repository import DbRepository
 class MonitoredUrlPersistence(DbRepository[MonitoredUrl]):
     def __init__(self):
         super(MonitoredUrlPersistence, self).__init__(
-            table_name="monitored_url", object_factory=lambda dict: MonitoredUrl(**dict))
+            table_name="monitored_url", object_factory=lambda dict: MonitoredUrl(**dict), is_view=True)
 
     async def insert_monitored_url(self, url_payload: CreateMonitoredUrl):
         try:
@@ -19,7 +19,7 @@ class MonitoredUrlPersistence(DbRepository[MonitoredUrl]):
 
     async def update_monitored_url(self, patched_url: MonitoredUrl):
         try:
-            url = await self.update(patched_url.model_dump())
+            url = await self.update(str(patched_url.id), patched_url.model_dump())
             return url
         except ItemBusinessError as error:
             raise MonitoredUrlBusinessError(

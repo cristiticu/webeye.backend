@@ -14,11 +14,16 @@ class PsycopgGenericException(DatabaseException):
                 severity: {error.diag.severity}
                 table: {error.diag.table_name}
                 ''',
-            error_trace=None)
+            error_trace=None
+        )
 
 
-class PsycopgIntegrityException(DatabaseException):
+class PsycopgUniqueException(DatabaseException):
     def __init__(self, error: Error):
-        super(PsycopgIntegrityException, self).__init__(
-            msg=f"{error.diag.message_primary} {error.diag.message_detail}",
-            error_trace=None)
+        super(PsycopgUniqueException, self).__init__(
+            msg=f'''Unique Error:
+                primary: {error.diag.message_primary}
+                detail: {error.diag.message_detail}
+                ''',
+            error_trace=None
+        )

@@ -4,7 +4,7 @@ from typing import Any, Callable, Sequence, TypeVar
 from psycopg import AsyncCursor, Error, IntegrityError
 from psycopg_pool import AsyncConnectionPool
 from settings import POSTGRES_ADDRESS, POSTGRES_PORT, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB_NAME
-from shared.database.exceptions import PsycopgGenericException, PsycopgIntegrityException
+from shared.database.exceptions import PsycopgGenericException, PsycopgUniqueException
 from shared.entity import Entity
 
 T = TypeVar('T', bound=Entity)
@@ -24,7 +24,7 @@ async def cursor(row_factory: Callable[[AsyncCursor[Any]], Callable[[Sequence[An
                 yield cursor
             except IntegrityError as error:
                 if error.sqlstate == "23505":
-                    raise PsycopgIntegrityException(error) from error
+                    raise PsycopgUniqueException(error) from error
                 else:
                     raise PsycopgGenericException(error) from error
             except Error as error:

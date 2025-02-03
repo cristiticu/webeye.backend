@@ -7,7 +7,10 @@ from user_account.model import CreateUserAccount, UserAccount
 class UserAccountPersistence(DbRepository[UserAccount]):
     def __init__(self):
         super(UserAccountPersistence, self).__init__(table_name="user_account",
-                                                     object_factory=lambda dict: UserAccount(**dict))
+                                                     object_factory=lambda dict: UserAccount(
+                                                         **dict),
+                                                     is_view=True
+                                                     )
 
     async def insert_user_account(self, user_payload: CreateUserAccount):
         try:
@@ -19,7 +22,7 @@ class UserAccountPersistence(DbRepository[UserAccount]):
 
     async def update_user_account(self, patched_user: UserAccount):
         try:
-            user = await self.update(patched_user.model_dump())
+            user = await self.update(str(patched_user.id), patched_user.model_dump())
             return user
         except ItemBusinessError as error:
             raise UserBusinessError(
