@@ -3,10 +3,9 @@ from decimal import Decimal
 from uuid import UUID, uuid4
 from pydantic import ConfigDict, Field
 import pytest
-
+from shared.database import db_pool
 from exceptions import ItemBusinessError
 from shared.database.db_repository import DbRepository
-from shared.database import db_pool
 from shared.database.exceptions import PsycopgGenericException
 from shared.entity import Entity
 
@@ -20,13 +19,6 @@ class PostgresTestData(Entity):
     test_numeric: Decimal
     test_text: str
     test_timestamp: datetime
-
-
-@pytest.fixture(scope="session")
-async def with_db_pool():
-    await db_pool.db_connection_pool.open()
-    yield
-    await db_pool.db_connection_pool.close()
 
 
 @pytest.fixture
@@ -49,6 +41,13 @@ def test_data_2() -> PostgresTestData:
         test_text="Test Text 2",
         test_timestamp=datetime(1999, 1, 1, 23, 59, 59, 59, timezone.utc)
     )
+
+
+@pytest.fixture(scope="session")
+async def with_db_pool():
+    await db_pool.db_connection_pool.open()
+    yield
+    await db_pool.db_connection_pool.close()
 
 
 @pytest.fixture
