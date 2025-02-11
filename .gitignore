@@ -12,3 +12,4 @@ __pycache__/
 create_db.sh
 .db
 .coverage
+.pytest_cache
