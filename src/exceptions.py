@@ -27,7 +27,7 @@ class DatabaseException(Error):
         '''Custom exception for any low level database error'''
 
         super(DatabaseException, self).__init__(
-            msg=msg or "Could not perform database request",
+            msg=msg or "Could not perform request",
             error_trace=error_trace
         )
 
@@ -59,7 +59,7 @@ def register_error_handlers(app: FastAPI):
 
     @app.exception_handler(DatabaseException)
     def _(_: Request, exception: DatabaseException):
-        return JSONResponse(status_code=status.HTTP_418_IM_A_TEAPOT, content={"message": "I'm a teapot"})
+        return JSONResponse(status_code=status.HTTP_418_IM_A_TEAPOT, content={"message": exception.message})
 
     @app.exception_handler(ItemNotFound)
     def _(_: Request, exception: ItemNotFound):
