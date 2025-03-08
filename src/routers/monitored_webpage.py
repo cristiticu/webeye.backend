@@ -4,7 +4,7 @@ from context import ApplicationContext
 from monitored_webpage.model import CreateMonitoredWebpage
 
 
-router = APIRouter(prefix="/monitored-webpage", tags=["Monitored Webpage"])
+router = APIRouter(prefix="/monitored-webpage", tags=["monitored webpage"])
 application_context = ApplicationContext()
 
 

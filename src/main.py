@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from exceptions import register_error_handlers
+import settings
 from shared.database import db_pool
 from routers.user_account import router as user_account_router
 from routers.monitored_webpage import router as monitored_webpage_router
@@ -14,7 +15,10 @@ async def app_lifecycle(app: FastAPI):
     yield
     await db_pool.db_connection_pool.close()
 
-app = FastAPI(title='webpage-monitoring', lifespan=app_lifecycle)
+app = FastAPI(title='webpage monitoring',
+              version='0.1.0',
+              debug=settings.ENVIRONMENT != 'production',
+              lifespan=app_lifecycle)
 
 app.add_middleware(CORSMiddleware,
                    allow_origins=['*'],

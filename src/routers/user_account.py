@@ -2,7 +2,7 @@ from fastapi import APIRouter, status
 from context import ApplicationContext
 from user_account.model import CreateUserAccount, UserAccountPatch
 
-router = APIRouter(prefix="/user", tags=["User Account"])
+router = APIRouter(prefix="/user", tags=["user account"])
 application_context = ApplicationContext()
 
 
