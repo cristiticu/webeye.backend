@@ -7,7 +7,11 @@ from shared.database import db_pool
 from exceptions import ItemBusinessError
 from shared.database.db_repository import DbRepository
 from shared.database.exceptions import PsycopgGenericException
+from shared.database.utils import is_pg_engine_reachable
 from shared.entity import Entity
+
+pytestmark = pytest.mark.skipif(
+    not is_pg_engine_reachable(), reason="PostgreSQL Engine is not reachable")
 
 
 class PostgresTestData(Entity):

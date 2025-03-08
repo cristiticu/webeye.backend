@@ -12,7 +12,16 @@ def mock_env_vars(monkeypatch: pytest.MonkeyPatch):
 
 @pytest.fixture(autouse=True)
 def mock_all_persistences(monkeypatch: pytest.MonkeyPatch):
+    context_instance = context.ApplicationContext.instance
+
     monkeypatch.setattr(
-        context.ApplicationContext.instance.monitored_webpages, "_webpages", MockedMonitoredWebpagePersistence())
-    monkeypatch.setattr(context.ApplicationContext.instance.user_accounts,
-                        "_users", MockedUserAccountPersistence())
+        context_instance.monitored_webpages,
+        "_webpages",
+        MockedMonitoredWebpagePersistence()
+    )
+
+    monkeypatch.setattr(
+        context_instance.user_accounts,
+        "_users",
+        MockedUserAccountPersistence()
+    )
