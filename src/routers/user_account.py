@@ -1,38 +1,35 @@
 from fastapi import APIRouter, status
+from context import ApplicationContext
 from user_account.model import CreateUserAccount, UserAccountPatch
-from user_account.persistence import UserAccountPersistence
-from user_account.service import UserAccountService
 
 router = APIRouter(prefix="/user", tags=["User Account"])
-
-uap = UserAccountPersistence()
-service = UserAccountService(uap)
+application_context = ApplicationContext()
 
 
 @router.get("")
 async def list_users():
-    users = await service.get_all()
+    users = await application_context.user_accounts.get_all()
     return users
 
 
 @router.get("/{user_id}")
 async def get_user(user_id: str):
-    user = await service.get(user_id)
+    user = await application_context.user_accounts.get(user_id)
     return user
 
 
 @router.post("")
 async def create_user(user_payload: CreateUserAccount):
-    user = await service.create(user_payload)
+    user = await application_context.user_accounts.create(user_payload)
     return user
 
 
 @router.patch("{user_id}")
 async def update_user(user_id: str, patch: UserAccountPatch):
-    user = await service.update(user_id, patch)
+    user = await application_context.user_accounts.update(user_id, patch)
     return user
 
 
 @router.delete("{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(user_id: str):
-    await service.delete(user_id)
+    await application_context.user_accounts.delete(user_id)

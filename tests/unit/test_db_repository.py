@@ -43,7 +43,7 @@ def test_data_2() -> PostgresTestData:
     )
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 async def with_db_pool():
     await db_pool.db_connection_pool.open()
     yield
