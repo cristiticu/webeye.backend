@@ -1,5 +1,5 @@
 from exceptions import ItemBusinessError
-from shared.database.db_repository import DbRepository
+from shared.psycopg.db_repository import DbRepository
 from user_account.exceptions import UserBusinessError
 from user_account.model import CreateUserAccount, UserAccount
 

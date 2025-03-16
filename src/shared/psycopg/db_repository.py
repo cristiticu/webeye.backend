@@ -3,8 +3,8 @@ from typing import Any, Callable, Generic, Sequence, TypeVar
 from psycopg import AsyncCursor, Column, sql
 from exceptions import ItemBusinessError
 import settings
-from shared.database import db_pool
-from shared.database.exceptions import PsycopgGenericException, PsycopgUniqueException
+from shared.psycopg import db_pool
+from shared.psycopg.exceptions import PsycopgGenericException, PsycopgUniqueException
 from shared.entity import Entity
 
 

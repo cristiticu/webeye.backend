@@ -1,7 +1,7 @@
 from exceptions import ItemBusinessError
 from monitored_webpage.exceptions import MonitoredWebpageBusinessError
 from monitored_webpage.model import MonitoredWebpage, CreateMonitoredWebpage
-from shared.database.db_repository import DbRepository
+from shared.psycopg.db_repository import DbRepository
 
 
 class MonitoredWebpagePersistence(DbRepository[MonitoredWebpage]):

@@ -1,6 +1,6 @@
 from psycopg import connect
 
-from shared.database import db_pool
+from shared.psycopg import db_pool
 
 
 def is_pg_engine_reachable():

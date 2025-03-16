@@ -1,6 +1,6 @@
 from monitored_webpage.exceptions import MonitoredWebpageBusinessError, MonitoredWebpageNotFound
 from monitored_webpage.model import CreateMonitoredWebpage
-from monitored_webpage.persistence import MonitoredWebpagePersistence
+from monitored_webpage.deprecated.persistence import MonitoredWebpagePersistence
 
 
 class MonitoredWebpageService():

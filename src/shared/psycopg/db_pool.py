@@ -4,7 +4,7 @@ from typing import Any, Callable, Sequence, TypeVar
 from psycopg import AsyncCursor, Error, IntegrityError
 from psycopg_pool import AsyncConnectionPool
 from settings import POSTGRES_ADDRESS, POSTGRES_PORT, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB_NAME
-from shared.database.exceptions import PsycopgGenericException, PsycopgUniqueException
+from shared.psycopg.exceptions import PsycopgGenericException, PsycopgUniqueException
 from shared.entity import Entity
 
 T = TypeVar('T', bound=Entity)

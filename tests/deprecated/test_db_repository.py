@@ -3,11 +3,11 @@ from decimal import Decimal
 from uuid import UUID, uuid4
 from pydantic import ConfigDict, Field
 import pytest
-from shared.database import db_pool
+from shared.psycopg import db_pool
 from exceptions import ItemBusinessError
-from shared.database.db_repository import DbRepository
-from shared.database.exceptions import PsycopgGenericException
-from shared.database.utils import is_pg_engine_reachable
+from shared.psycopg.db_repository import DbRepository
+from shared.psycopg.exceptions import PsycopgGenericException
+from shared.psycopg.utils import is_pg_engine_reachable
 from shared.entity import Entity
 
 pytestmark = pytest.mark.skipif(

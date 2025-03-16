@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from exceptions import register_error_handlers
 import settings
-from shared.database import db_pool
+from shared.psycopg import db_pool
 from routers.user_account import router as user_account_router
 from routers.monitored_webpage import router as monitored_webpage_router
 

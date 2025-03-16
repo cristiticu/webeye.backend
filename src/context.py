@@ -1,6 +1,6 @@
-from monitored_webpage.persistence import MonitoredWebpagePersistence
+from monitored_webpage.deprecated.persistence import MonitoredWebpagePersistence
 from monitored_webpage.service import MonitoredWebpageService
-from user_account.persistence import UserAccountPersistence
+from user_account.deprecated.persistence import UserAccountPersistence
 from user_account.service import UserAccountService
 
 

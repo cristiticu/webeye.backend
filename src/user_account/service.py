@@ -1,7 +1,7 @@
 
 from user_account.exceptions import UserAccountNotFound, UserBusinessError
 from user_account.model import CreateUserAccount, PartialUserAccount, UserAccount, UserAccountPatch
-from user_account.persistence import UserAccountPersistence
+from user_account.deprecated.persistence import UserAccountPersistence
 from passlib.context import CryptContext
 
 
