@@ -1,32 +1,32 @@
-from datetime import datetime
-from uuid import UUID, uuid4
-from user_account.exceptions import UserBusinessError
-from user_account.model import CreateUserAccount, UserAccount
+from uuid import UUID
+from user_account.exceptions import UserAccountNotFound
+from user_account.model import UserAccount
 
 
 class MockedUserAccountPersistence():
     def __init__(self, *args, **kwargs):
         self._users: list[UserAccount] = []
 
-    async def get_all(self):
+    def get_all(self):
         return self._users
 
-    async def get_one(self, user_id: str):
+    def get(self, user_id: str):
         user = [
-            user for user in self._users if user.id == UUID(user_id)]
+            user for user in self._users if user.guid == UUID(user_id)]
 
         if len(user) == 1:
             return user[0]
         else:
-            return None
+            raise UserAccountNotFound()
 
-    async def insert_user_account(self, user_payload: CreateUserAccount):
-        for user in self._users:
-            if user.email == user_payload.email:
-                raise UserBusinessError()
+    def get_by_email(self, email: str):
+        user = [
+            user for user in self._users if user.email == email]
 
-        account = UserAccount(
-            **{**user_payload.model_dump(), "added_at": datetime.now(), "id": uuid4()})
-        self._users.append(account)
+        if len(user) == 1:
+            return user[0]
+        else:
+            raise UserAccountNotFound()
 
-        return account
+    def persist(self, payload: UserAccount):
+        self._users.append(payload)

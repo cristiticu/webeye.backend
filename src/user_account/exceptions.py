@@ -7,7 +7,7 @@ class UserAccountNotFound(ItemNotFound):
             msg=msg or "User Account not found", error_trace=error_trace)
 
 
-class UserBusinessError(ItemBusinessError):
+class EmailAlreadyExists(ItemBusinessError):
     def __init__(self, msg=None, error_trace=None):
-        super(UserBusinessError, self).__init__(
-            msg=msg or "Could not service user account request", error_trace=error_trace)
+        super(EmailAlreadyExists, self).__init__(
+            msg=msg or "Email already registered", error_trace=error_trace)

@@ -1,6 +1,7 @@
-from monitored_webpage.deprecated.persistence import MonitoredWebpagePersistence
+from auth.service import AuthService
+from monitored_webpage.persistence import MonitoredWebpagePersistence
 from monitored_webpage.service import MonitoredWebpageService
-from user_account.deprecated.persistence import UserAccountPersistence
+from user_account.persistence import UserAccountPersistence
 from user_account.service import UserAccountService
 
 
@@ -11,10 +12,12 @@ class ApplicationContext():
         return cls.instance
 
     def __init__(self):
-        self._monitored_webpages_persistence = MonitoredWebpagePersistence()
-        self.monitored_webpages = MonitoredWebpageService(
-            self._monitored_webpages_persistence)
-
         self._user_accounts_persistence = UserAccountPersistence()
         self.user_accounts = UserAccountService(
             self._user_accounts_persistence)
+
+        self.authentication = AuthService(self._user_accounts_persistence)
+
+        self._monitored_webpages_persistence = MonitoredWebpagePersistence()
+        self.monitored_webpages = MonitoredWebpageService(
+            self._monitored_webpages_persistence, self.user_accounts)

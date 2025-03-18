@@ -1,10 +1,11 @@
 from datetime import datetime
-
-from pydantic import BaseModel
-from shared.entity import Entity
+from pydantic import UUID4, BaseModel, ConfigDict
 
 
-class UserAccount(Entity):
+class UserAccount(BaseModel):
+    model_config = ConfigDict(revalidate_instances='always')
+
+    guid: UUID4
     email: str
     password: str
     first_name: str
@@ -12,7 +13,10 @@ class UserAccount(Entity):
     added_at: datetime
 
 
-class PartialUserAccount(Entity):
+class PartialUserAccount(BaseModel):
+    model_config = ConfigDict(revalidate_instances='always')
+
+    guid: UUID4
     email: str
     first_name: str
     last_name: str | None = None
@@ -20,6 +24,8 @@ class PartialUserAccount(Entity):
 
 
 class CreateUserAccount(BaseModel):
+    model_config = ConfigDict(revalidate_instances='always')
+
     email: str
     password: str
     first_name: str
@@ -27,7 +33,8 @@ class CreateUserAccount(BaseModel):
 
 
 class UserAccountPatch(BaseModel):
-    email: str | None = None
+    model_config = ConfigDict(revalidate_instances='always')
+
     password: str | None = None
     first_name: str | None = None
     last_name: str | None = None

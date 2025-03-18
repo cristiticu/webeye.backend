@@ -1,7 +1,9 @@
 
-from user_account.exceptions import UserAccountNotFound, UserBusinessError
+from datetime import datetime, timezone
+from uuid import uuid4
+from user_account.exceptions import EmailAlreadyExists, UserAccountNotFound
 from user_account.model import CreateUserAccount, PartialUserAccount, UserAccount, UserAccountPatch
-from user_account.deprecated.persistence import UserAccountPersistence
+from user_account.persistence import UserAccountPersistence
 from passlib.context import CryptContext
 
 
@@ -12,49 +14,47 @@ class UserAccountService():
     def __init__(self, persistence: UserAccountPersistence):
         self._users = persistence
 
-    async def get_all(self):
-        accounts = await self._users.get_all()
+    def get_all(self):
+        accounts = self._users.get_all()
+        return [PartialUserAccount.model_validate(account, from_attributes=True) for account in accounts]
 
-        return [PartialUserAccount(**{**account.model_dump()}) for account in accounts]
+    def get(self, id: str):
+        account = self._users.get(id)
+        return PartialUserAccount.model_validate(account, from_attributes=True)
 
-    async def get(self, id: str):
-        account = await self._users.get_one(id)
+    def create(self, payload: CreateUserAccount):
+        try:
+            self._users.get_by_email(payload.email)
+            raise EmailAlreadyExists()
+        except UserAccountNotFound:
+            pass
 
-        if account is None:
-            raise UserAccountNotFound()
+        account_payload = {
+            **payload.model_dump(exclude_none=True),
+            "guid": uuid4(),
+            "password": pwd_context.hash(payload.password),
+            "added_at": datetime.now(timezone.utc)
+        }
 
-        return PartialUserAccount(**{**account.model_dump()})
+        account = UserAccount.model_validate(account_payload)
+        self._users.persist(account)
 
-    async def create(self, payload: CreateUserAccount):
-        account = await self._users.insert_user_account(
-            CreateUserAccount(
-                **{**payload.model_dump(exclude_none=True),
-                   "password": pwd_context.hash(payload.password)}
-            ))
+        return PartialUserAccount.model_validate(account, from_attributes=True)
 
-        if account is None:
-            raise UserBusinessError("Could not create user")
-
-        return PartialUserAccount(**{**account.model_dump()})
-
-    async def update(self, id: str, patch: UserAccountPatch):
-        account = await self._users.get_one(id)
-
-        if account is None:
-            raise UserAccountNotFound()
+    def update(self, id: str, patch: UserAccountPatch):
+        account = self._users.get(id)
 
         patch.password = pwd_context.hash(
             patch.password) if patch.password else None
+        patched_account = UserAccount.model_validate(
+            {
+                **account.model_dump(),
+                **patch.model_dump(exclude_none=True)
+            })
 
-        patched_account = UserAccount(
-            **{**account.model_dump(), **patch.model_dump(exclude_none=True)})
+        self._users.persist(patched_account)
 
-        response = await self._users.update_user_account(patched_account)
+        return PartialUserAccount.model_validate(patched_account, from_attributes=True)
 
-        if response is None:
-            raise UserBusinessError("Could not update user")
-
-        return PartialUserAccount(**{**response.model_dump()})
-
-    async def delete(self, id: str):
-        await self._users.delete(id)
+    def delete(self, id: str):
+        self._users.delete(id)

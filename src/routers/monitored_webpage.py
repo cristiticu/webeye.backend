@@ -1,5 +1,7 @@
-from fastapi import APIRouter
-
+from typing import Annotated
+from fastapi import APIRouter, Depends
+from auth.dependencies import user_token_data
+from auth.model import UserTokenData
 from context import ApplicationContext
 from monitored_webpage.model import CreateMonitoredWebpage
 
@@ -9,18 +11,20 @@ application_context = ApplicationContext()
 
 
 @router.get("")
-async def list_webpages():
-    webpages = await application_context.monitored_webpages.get_all()
+def list_webpages(token: Annotated[UserTokenData, Depends(user_token_data)]):
+    webpages = application_context.monitored_webpages.get_all(token.user_guid)
     return webpages
 
 
 @router.get("/{webpage_id}")
-async def get_monitored_webpage(webpage_id: str):
-    webpage = await application_context.monitored_webpages.get(webpage_id)
+def get_monitored_webpage(webpage_id: str, token: Annotated[UserTokenData, Depends(user_token_data)]):
+    webpage = application_context.monitored_webpages.get(
+        token.user_guid, webpage_id)
     return webpage
 
 
 @router.post("")
-async def create_monitored_webpage(webpage_payload: CreateMonitoredWebpage):
-    webpage = await application_context.monitored_webpages.create(webpage_payload)
+def create_monitored_webpage(webpage_payload: CreateMonitoredWebpage, token: Annotated[UserTokenData, Depends(user_token_data)]):
+    webpage = application_context.monitored_webpages.create(
+        token.user_guid, webpage_payload)
     return webpage

@@ -11,7 +11,7 @@ application_context = ApplicationContext()
 @pytest.fixture
 def mock_user_1():
     return UserAccount(
-        id=uuid4(),
+        guid=uuid4(),
         email="test@email.com",
         password="1234",
         first_name="First",
@@ -23,7 +23,7 @@ def mock_user_1():
 @pytest.fixture
 def mock_user_2():
     return UserAccount(
-        id=uuid4(),
+        guid=uuid4(),
         email="test2@email.com",
         password="1234",
         first_name="Second",
@@ -32,22 +32,22 @@ def mock_user_2():
     )
 
 
-async def test_user_service_get_all():
-    data = await application_context.user_accounts.get_all()
+def test_user_service_get_all():
+    data = application_context.user_accounts.get_all()
 
     assert len(data) == 0
 
 
-async def test_user_service_get_one(mock_user_1):
-    user = await application_context.user_accounts.create(CreateUserAccount(email="test2@email.com",
+def test_user_service_get_one(mock_user_1):
+    user = application_context.user_accounts.create(CreateUserAccount(email="test2@email.com",
                                                                             password="1234",
                                                                             first_name="Second",
                                                                             last_name="Last 2",))
-    read = await application_context.user_accounts.get(str(user.id))
+    read = application_context.user_accounts.get(str(user.guid))
 
     assert read != None
 
 
-async def test_user_service_get_invalid():
+def test_user_service_get_invalid():
     with pytest.raises(UserAccountNotFound):
-        await application_context.user_accounts.get("invalid id")
+        application_context.user_accounts.get("invalid id")

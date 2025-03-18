@@ -1,16 +1,13 @@
 from datetime import datetime
-from uuid import UUID
-
-from pydantic import BaseModel
-from shared.entity import Entity
+from pydantic import UUID4, BaseModel
 
 
-class MonitoredWebpage(Entity):
-    user_account_id: UUID
+class MonitoredWebpage(BaseModel):
+    guid: UUID4
+    user_guid: UUID4
     url: str
     added_at: datetime
 
 
 class CreateMonitoredWebpage(BaseModel):
-    user_account_id: str
     url: str

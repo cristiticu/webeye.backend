@@ -7,7 +7,13 @@ class MonitoredWebpageNotFound(ItemNotFound):
             msg=msg or "Webpage not found", error_trace=error_trace)
 
 
-class MonitoredWebpageBusinessError(ItemBusinessError):
+class MonitoredWebpageAlreadyExists(ItemBusinessError):
     def __init__(self, msg=None, error_trace=None):
-        super(MonitoredWebpageBusinessError, self).__init__(
-            msg=msg or "Could not perform webpage request", error_trace=error_trace)
+        super(MonitoredWebpageAlreadyExists, self).__init__(
+            msg=msg or "URL already monitored", error_trace=error_trace)
+
+
+class UrlNotReachable(ItemBusinessError):
+    def __init__(self, msg=None, error_trace=None):
+        super(UrlNotReachable, self).__init__(
+            msg=msg or "URL unreachable", error_trace=error_trace)
