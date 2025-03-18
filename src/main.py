@@ -1,10 +1,8 @@
-from contextlib import asynccontextmanager
+import settings
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from exceptions import register_error_handlers
-import settings
-from shared.psycopg import db_pool
 from routers.user_account import router as user_account_router
 from routers.monitored_webpage import router as monitored_webpage_router
 from routers.auth import router as authentication_router
