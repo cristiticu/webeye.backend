@@ -10,16 +10,10 @@ from routers.monitored_webpage import router as monitored_webpage_router
 from routers.auth import router as authentication_router
 
 
-@asynccontextmanager
-async def app_lifecycle(app: FastAPI):
-    await db_pool.db_connection_pool.open()
-    yield
-    await db_pool.db_connection_pool.close()
-
 app = FastAPI(title='webpage monitoring',
               version='0.1.0',
-              debug=settings.ENVIRONMENT != 'production',
-              lifespan=app_lifecycle)
+              debug=settings.ENVIRONMENT != 'production'
+              )
 
 app.add_middleware(CORSMiddleware,
                    allow_origins=['*'],
