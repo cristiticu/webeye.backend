@@ -12,14 +12,14 @@ class MonitoredWebpagePersistence():
         self.webpages = dynamodb_table(settings.MONITORED_WEBPAGES_TABLE_NAME)
 
     def persist(self, payload: MonitoredWebpage):
-        self.webpages.put_item(Item=payload.model_dump(mode="json"))
+        self.webpages.put_item(Item=payload.to_db_item())
 
     def get_all(self, user_guid: str):
         response = self.webpages.query(
             KeyConditionExpression=boto3.dynamodb.conditions.Key("user_guid").eq(user_guid))
         items = response.get("Items")
 
-        return [MonitoredWebpage.model_validate(item) for item in items]
+        return [MonitoredWebpage.from_db_item(item) for item in items]
 
     def get(self, user_guid: str, url: str):
         response = self.webpages.get_item(
@@ -29,4 +29,4 @@ class MonitoredWebpagePersistence():
         if item is None:
             raise MonitoredWebpageNotFound()
 
-        return MonitoredWebpage.model_validate(item)
+        return MonitoredWebpage.from_db_item(item)

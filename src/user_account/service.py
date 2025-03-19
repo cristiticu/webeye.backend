@@ -2,7 +2,7 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 from user_account.exceptions import EmailAlreadyExists, UserAccountNotFound
-from user_account.model import CreateUserAccount, PartialUserAccount, UserAccount, UserAccountPatch
+from user_account.model import CreateUserAccount, UserAccount, UserAccountPatch
 from user_account.persistence import UserAccountPersistence
 from passlib.context import CryptContext
 
@@ -16,11 +16,11 @@ class UserAccountService():
 
     def get_all(self):
         accounts = self._users.get_all()
-        return [PartialUserAccount.model_validate(account, from_attributes=True) for account in accounts]
+        return [account.to_partial_account() for account in accounts]
 
     def get(self, id: str):
         account = self._users.get(id)
-        return PartialUserAccount.model_validate(account, from_attributes=True)
+        return account.to_partial_account()
 
     def create(self, payload: CreateUserAccount):
         try:
@@ -39,7 +39,7 @@ class UserAccountService():
         account = UserAccount.model_validate(account_payload)
         self._users.persist(account)
 
-        return PartialUserAccount.model_validate(account, from_attributes=True)
+        return account.to_partial_account()
 
     def update(self, id: str, patch: UserAccountPatch):
         account = self._users.get(id)
@@ -54,7 +54,7 @@ class UserAccountService():
 
         self._users.persist(patched_account)
 
-        return PartialUserAccount.model_validate(patched_account, from_attributes=True)
+        return account.to_partial_account()
 
     def delete(self, id: str):
         self._users.delete(id)

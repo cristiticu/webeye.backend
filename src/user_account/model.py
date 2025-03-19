@@ -19,6 +19,13 @@ class UserAccount(BaseModel):
             "s_key": 'DATA'
         }
 
+    def to_partial_account(self):
+        return PartialUserAccount.model_validate(self, from_attributes=True)
+
+    @classmethod
+    def from_db_item(cls, item: Mapping):
+        return UserAccount.model_validate(item)
+
 
 class PartialUserAccount(BaseModel):
     model_config = ConfigDict(revalidate_instances='always')

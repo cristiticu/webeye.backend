@@ -2,6 +2,8 @@ from auth.persistence import AuthPersistence
 from auth.service import AuthService
 from monitored_webpage.persistence import MonitoredWebpagePersistence
 from monitored_webpage.service import MonitoredWebpageService
+from scheduled_tasks.persistence import ScheduledTasksPersistence
+from scheduled_tasks.service import ScheduledTasksService
 from user_account.persistence import UserAccountPersistence
 from user_account.service import UserAccountService
 
@@ -24,3 +26,7 @@ class ApplicationContext():
         self._monitored_webpages_persistence = MonitoredWebpagePersistence()
         self.monitored_webpages = MonitoredWebpageService(
             self._monitored_webpages_persistence, self.user_accounts)
+
+        self._scheduled_tasks_persistence = ScheduledTasksPersistence()
+        self.scheduled_tasks = ScheduledTasksService(
+            self._scheduled_tasks_persistence, self.monitored_webpages)

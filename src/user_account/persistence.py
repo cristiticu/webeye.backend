@@ -16,7 +16,7 @@ class UserAccountPersistence():
         response = self.users.scan()
         items = response.get("Items")
 
-        return [UserAccount.model_validate(item) for item in items if str(item.get("s_key")).startswith("DATA")]
+        return [UserAccount.from_db_item(item) for item in items if str(item.get("s_key")).startswith("DATA")]
 
     def get(self, guid: str):
         response = self.users.get_item(Key={"guid": guid, "s_key": "DATA"})
@@ -25,7 +25,7 @@ class UserAccountPersistence():
         if item is None:
             raise UserAccountNotFound()
 
-        return UserAccount.model_validate(item)
+        return UserAccount.from_db_item(item)
 
     def get_by_email(self, email: str):
         response = self.users.query(KeyConditionExpression=Key(
@@ -35,7 +35,7 @@ class UserAccountPersistence():
         if len(items) == 0:
             raise UserAccountNotFound()
 
-        return UserAccount.model_validate(items[0])
+        return UserAccount.from_db_item(items[0])
 
     def delete(self, guid: str):
         self.users.delete_item(Key={"guid": guid})

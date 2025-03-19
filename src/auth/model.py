@@ -38,4 +38,4 @@ class LoggedInDevice(BaseModel):
             "guid": split_s_key[1],
             "user_guid": item["guid"],
         }
-        return LoggedInDevice.model_validate(item_payload, from_attributes=True)
+        return LoggedInDevice.model_validate(item_payload)
