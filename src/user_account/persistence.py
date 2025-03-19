@@ -1,6 +1,4 @@
-import boto3
-import boto3.dynamodb
-import boto3.dynamodb.conditions
+from boto3.dynamodb.conditions import Key
 import settings
 from shared.dynamodb import dynamodb_table
 from user_account.exceptions import UserAccountNotFound
@@ -12,16 +10,16 @@ class UserAccountPersistence():
         self.users = dynamodb_table(settings.USER_ACCOUNTS_TABLE_NAME)
 
     def persist(self, payload: UserAccount):
-        self.users.put_item(Item=payload.model_dump(mode="json"))
+        self.users.put_item(Item=payload.to_db_item())
 
-    def get_all(self):
+    def get_all(self) -> list[UserAccount]:
         response = self.users.scan()
         items = response.get("Items")
 
-        return [UserAccount.model_validate(item) for item in items]
+        return [UserAccount.model_validate(item) for item in items if str(item.get("s_key")).startswith("DATA")]
 
     def get(self, guid: str):
-        response = self.users.get_item(Key={"guid": guid})
+        response = self.users.get_item(Key={"guid": guid, "s_key": "DATA"})
         item = response.get("Item")
 
         if item is None:
@@ -30,7 +28,7 @@ class UserAccountPersistence():
         return UserAccount.model_validate(item)
 
     def get_by_email(self, email: str):
-        response = self.users.query(KeyConditionExpression=boto3.dynamodb.conditions.Key(
+        response = self.users.query(KeyConditionExpression=Key(
             "email").eq(email), IndexName=settings.USER_ACCOUNTS_EMAIL_GSI)
         items = response.get("Items")
 

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Mapping
 from pydantic import UUID4, BaseModel, ConfigDict
 
 
@@ -11,6 +12,12 @@ class UserAccount(BaseModel):
     first_name: str
     last_name: str | None = None
     added_at: datetime
+
+    def to_db_item(self):
+        return {
+            **self.model_dump(mode="json"),
+            "s_key": 'DATA'
+        }
 
 
 class PartialUserAccount(BaseModel):

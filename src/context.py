@@ -1,3 +1,4 @@
+from auth.persistence import AuthPersistence
 from auth.service import AuthService
 from monitored_webpage.persistence import MonitoredWebpagePersistence
 from monitored_webpage.service import MonitoredWebpageService
@@ -16,7 +17,9 @@ class ApplicationContext():
         self.user_accounts = UserAccountService(
             self._user_accounts_persistence)
 
-        self.authentication = AuthService(self._user_accounts_persistence)
+        self._authentication_persistence = AuthPersistence()
+        self.authentication = AuthService(
+            self._user_accounts_persistence, self._authentication_persistence)
 
         self._monitored_webpages_persistence = MonitoredWebpagePersistence()
         self.monitored_webpages = MonitoredWebpageService(
