@@ -2,8 +2,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
-from auth.dependencies import refresh_token_data
-from auth.model import RefreshTokenData
+from auth.dependencies import refresh_token_data, user_token_data
+from auth.model import RefreshTokenData, UserTokenData
 from context import ApplicationContext
 
 
@@ -50,3 +50,18 @@ def logout(refresh_token: Annotated[RefreshTokenData, Depends(refresh_token_data
         refresh_token.user_guid, refresh_token.device_guid)
 
     return JSONResponse(status_code=status.HTTP_204_NO_CONTENT, content="No content")
+
+
+@router.post("/logout-all")
+def logout_all_sessions(token: Annotated[UserTokenData, Depends(user_token_data)]):
+    application_context.authentication.logout_all_sessions(token.user_guid)
+
+    return JSONResponse(status_code=status.HTTP_204_NO_CONTENT, content="No content")
+
+
+@router.get("/sessions")
+def get_logged_in_sessions(token: Annotated[UserTokenData, Depends(user_token_data)]):
+    devices = application_context.authentication.get_logged_in_sessions(
+        token.user_guid)
+
+    return devices

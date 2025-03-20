@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from auth.dependencies import user_token_data
 from auth.model import UserTokenData
 from context import ApplicationContext
+from monitored_webpage.exceptions import MonitoredWebpageNotFound
 from monitored_webpage.model import CreateMonitoredWebpage
 
 
@@ -16,10 +17,11 @@ def list_webpages(token: Annotated[UserTokenData, Depends(user_token_data)]):
     return webpages
 
 
-@router.get("/{webpage_id}")
-def get_monitored_webpage(webpage_id: str, token: Annotated[UserTokenData, Depends(user_token_data)]):
+@router.get("/{webpage_guid}")
+def get_monitored_webpage(webpage_guid: str, token: Annotated[UserTokenData, Depends(user_token_data)]):
+    raise MonitoredWebpageNotFound("NOT IMPLEMENTED")
     webpage = application_context.monitored_webpages.get(
-        token.user_guid, webpage_id)
+        token.user_guid, webpage_guid)
     return webpage
 
 

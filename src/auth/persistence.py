@@ -30,6 +30,19 @@ class AuthPersistence():
 
         return [LoggedInDevice.from_db_item(item) for item in items]
 
+    def batch_delete(self, user_guid: str):
+        devices = self.get_all(user_guid)
+
+        if len(devices) > 0:
+            with self.users.batch_writer() as batch:
+                for device in devices:
+                    batch.delete_item(
+                        Key={
+                            "guid": str(device.user_guid),
+                            "s_key": f"TOKEN#{device.guid}"
+                        }
+                    )
+
     def delete(self, user_guid: str, guid: str):
         self.users.delete_item(
             Key={"guid": user_guid, "s_key": f"TOKEN#{guid}"})

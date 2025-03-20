@@ -78,5 +78,11 @@ class AuthService():
             "refresh_token": new_refresh_token
         }
 
+    def get_logged_in_sessions(self, user_guid: str):
+        return self._devices.get_all(user_guid)
+
     def logout(self, user_guid: str, device_guid: str):
         self._devices.delete(user_guid, device_guid)
+
+    def logout_all_sessions(self, user_guid: str):
+        self._devices.batch_delete(user_guid)
