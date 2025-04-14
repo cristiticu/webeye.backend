@@ -1,6 +1,4 @@
-import boto3
-import boto3.dynamodb
-import boto3.dynamodb.conditions
+from boto3.dynamodb.conditions import Key
 from monitored_webpage.exceptions import MonitoredWebpageNotFound
 from monitored_webpage.model import MonitoredWebpage
 import settings
@@ -14,16 +12,16 @@ class MonitoredWebpagePersistence():
     def persist(self, payload: MonitoredWebpage):
         self.webpages.put_item(Item=payload.to_db_item())
 
-    def get_all(self, user_guid: str):
+    def get_all(self, u_guid: str):
         response = self.webpages.query(
-            KeyConditionExpression=boto3.dynamodb.conditions.Key("user_guid").eq(user_guid))
+            KeyConditionExpression=Key("u_guid").eq(u_guid))
         items = response.get("Items")
 
         return [MonitoredWebpage.from_db_item(item) for item in items]
 
-    def get(self, user_guid: str, url: str):
+    def get(self, u_guid: str, url: str):
         response = self.webpages.get_item(
-            Key={"user_guid": user_guid, "url": url})
+            Key={"u_guid": u_guid, "url": url})
         item = response.get("Item")
 
         if item is None:

@@ -1,5 +1,5 @@
 from scheduled_tasks.exceptions import ScheduledTaskNotFound
-from scheduled_tasks.model import ScheduledTask
+from scheduled_tasks.model import ScheduledCheck, ScheduledTask
 import settings
 from boto3.dynamodb.conditions import Key
 from shared.dynamodb import dynamodb_table
@@ -12,24 +12,27 @@ class ScheduledTasksPersistence():
     def persist(self, payload: ScheduledTask):
         self.tasks.put_item(Item=payload.to_db_item())
 
-    def get_all(self, user_guid: str, url: str):
-        h_key = f"{user_guid}#{url}"
+    def get_all_scheduled_checks(self, u_guid: str, url: str):
+        h_key = u_guid
+        s_key = f"CHECK#{url}"
 
         response = self.tasks.query(
-            KeyConditionExpression=Key("h_key").eq(h_key))
+            KeyConditionExpression=Key("h_key").eq(h_key) &
+            Key("s_key").begins_with(s_key)
+        )
         items = response.get("Items")
 
-        return [ScheduledTask.from_db_item(item) for item in items]
+        return [ScheduledCheck.from_db_item(item) for item in items]
 
-    def get(self, guid: str, user_guid: str, url: str, task_type: str):
-        h_key = f"{user_guid}#{url}"
-        task_key = f"{task_type}#{guid}"
+    def get_scheduled_check(self, guid: str, u_guid: str, url: str):
+        h_key = u_guid
+        s_key = f"CHECK#{url}#{guid}"
 
         response = self.tasks.get_item(
-            Key={"h_key": h_key, "task_key": task_key})
+            Key={"h_key": h_key, "s_key": s_key})
         item = response.get("Item")
 
         if item is None:
             raise ScheduledTaskNotFound()
 
-        return ScheduledTask.from_db_item(item)
+        return ScheduledCheck.from_db_item(item)

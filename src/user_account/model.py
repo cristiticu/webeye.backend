@@ -9,9 +9,9 @@ class UserAccount(BaseModel):
     guid: UUID4
     email: str
     password: str
-    first_name: str
-    last_name: str | None = None
-    added_at: datetime
+    f_name: str
+    l_name: str | None = None
+    c_at: datetime
 
     def to_db_item(self):
         return {
@@ -32,9 +32,9 @@ class PartialUserAccount(BaseModel):
 
     guid: UUID4
     email: str
-    first_name: str
-    last_name: str | None = None
-    added_at: datetime
+    f_name: str
+    l_name: str | None = None
+    c_at: datetime
 
 
 class CreateUserAccount(BaseModel):
@@ -42,13 +42,13 @@ class CreateUserAccount(BaseModel):
 
     email: str
     password: str
-    first_name: str
-    last_name: str | None = None
+    f_name: str
+    l_name: str | None = None
 
 
 class UserAccountPatch(BaseModel):
     model_config = ConfigDict(revalidate_instances='always')
 
     password: str | None = None
-    first_name: str | None = None
-    last_name: str | None = None
+    f_name: str | None = None
+    l_name: str | None = None

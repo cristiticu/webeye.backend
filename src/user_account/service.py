@@ -33,7 +33,7 @@ class UserAccountService():
             **payload.model_dump(exclude_none=True),
             "guid": uuid4(),
             "password": pwd_context.hash(payload.password),
-            "added_at": datetime.now(timezone.utc)
+            "c_at": datetime.now(timezone.utc)
         }
 
         account = UserAccount.model_validate(account_payload)

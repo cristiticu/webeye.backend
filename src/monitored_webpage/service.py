@@ -20,28 +20,28 @@ class MonitoredWebpageService():
         except requests.exceptions.RequestException:
             raise UrlNotReachable()
 
-    def get_all(self, user_guid: str):
-        return self._webpages.get_all(user_guid)
+    def get_all(self, u_guid: str):
+        return self._webpages.get_all(u_guid)
 
-    def get(self, user_guid: str, url: str):
-        webpage = self._webpages.get(user_guid, url)
+    def get(self, u_guid: str, url: str):
+        webpage = self._webpages.get(u_guid, url)
         return webpage
 
-    def create(self, user_guid: str, payload: CreateMonitoredWebpage):
+    def create(self, u_guid: str, payload: CreateMonitoredWebpage):
         self.is_url_reachable_or_raise(payload.url)
-        self._users.get(user_guid)
+        self._users.get(u_guid)
 
         try:
-            self._webpages.get(user_guid, payload.url)
+            self._webpages.get(u_guid, payload.url)
             raise MonitoredWebpageAlreadyExists()
         except MonitoredWebpageNotFound:
             pass
 
         webpage_payload = {
             **payload.model_dump(),
-            "user_guid": UUID(user_guid),
+            "u_guid": UUID(u_guid),
             "guid": uuid4(),
-            "added_at": datetime.now(timezone.utc)
+            "c_at": datetime.now(timezone.utc)
         }
 
         webpage = MonitoredWebpage.model_validate(

@@ -5,9 +5,9 @@ from pydantic import UUID4, BaseModel
 
 class MonitoredWebpage(BaseModel):
     guid: UUID4
-    user_guid: UUID4
+    u_guid: UUID4
     url: str
-    added_at: datetime
+    c_at: datetime
 
     def to_db_item(self):
         return self.model_dump(mode='json')
