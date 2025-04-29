@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 from monitored_webpage.service import MonitoredWebpageService
-from scheduled_tasks.model import CreateScheduledCheck, ScheduledCheck, ScheduledCheckConfiguration
+from scheduled_tasks.model import CreateScheduledCheck, ScheduledCheck, CheckConfiguration
 from scheduled_tasks.persistence import ScheduledTasksPersistence
 
 
@@ -16,8 +16,8 @@ class ScheduledTasksService():
     def create_check(self, u_guid: str, payload: CreateScheduledCheck):
         self._webpages.get(u_guid, payload.url)
 
-        configuration = ScheduledCheckConfiguration(
-            url=payload.url, regions=payload.regions)
+        configuration = CheckConfiguration(
+            url=payload.url, zones=payload.zones)
 
         task_payload = {
             **payload.model_dump(),

@@ -1,5 +1,5 @@
 from scheduled_tasks.exceptions import ScheduledTaskNotFound
-from scheduled_tasks.model import ScheduledCheck, ScheduledTask
+from scheduled_tasks.model import ScheduledAggregation, ScheduledCheck
 import settings
 from boto3.dynamodb.conditions import Key
 from shared.dynamodb import dynamodb_table
@@ -9,7 +9,7 @@ class ScheduledTasksPersistence():
     def __init__(self):
         self.tasks = dynamodb_table(settings.SCHEDULED_TASKS_TABLE_NAME)
 
-    def persist(self, payload: ScheduledTask):
+    def persist(self, payload: ScheduledCheck | ScheduledAggregation):
         self.tasks.put_item(Item=payload.to_db_item())
 
     def get_all_scheduled_checks(self, u_guid: str, url: str):
