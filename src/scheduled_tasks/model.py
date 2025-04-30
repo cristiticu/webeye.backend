@@ -18,6 +18,10 @@ class ScheduledTask(BaseModel, Generic[ConfigurationType]):
 class CheckConfiguration(BaseModel):
     url: str
     zones: list[Literal["america", "europe", "asia_pacific"]]
+    check_string: str | None = None
+    fail_on_status: list[int]
+    timeout: int
+    save_screenshot: bool
 
 
 class ScheduledCheck(ScheduledTask[CheckConfiguration]):
@@ -99,3 +103,6 @@ class CreateScheduledCheck(BaseModel):
     interval: Literal["1m", "2m", "5m", "10m", "15m", "30m"]
     days: Literal["all", "weekend", "weekdays"]
     zones: list[Literal["america", "europe", "asia_pacific"]]
+    check_string: str | None = None
+    fail_on_status: list[int] = [404, 500]
+    timeout: int = 20000

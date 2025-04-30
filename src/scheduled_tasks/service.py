@@ -24,7 +24,13 @@ class ScheduledTasksService():
             raise ScheduledCheckAlreadyExists()
 
         check_configuration = CheckConfiguration(
-            url=payload.url, zones=payload.zones)
+            url=payload.url,
+            zones=payload.zones,
+            check_string=payload.check_string,
+            fail_on_status=payload.fail_on_status,
+            timeout=payload.timeout,
+            save_screenshot=True
+        )
 
         check_task_payload = {
             **payload.model_dump(),
