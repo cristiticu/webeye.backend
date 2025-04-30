@@ -96,6 +96,6 @@ class ScheduledAggregation(ScheduledTask[AggregationConfiguration]):
 
 class CreateScheduledCheck(BaseModel):
     url: str
-    interval: Literal["30s", "1m", "2m", "5m", "10m", "15m", "30m"]
+    interval: Literal["1m", "2m", "5m", "10m", "15m", "30m"]
     days: Literal["all", "weekend", "weekdays"]
     zones: list[Literal["america", "europe", "asia_pacific"]]

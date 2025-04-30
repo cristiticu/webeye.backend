@@ -11,14 +11,14 @@ router = APIRouter(prefix="/task", tags=["scheduled task"])
 application_context = ApplicationContext()
 
 
-@router.get("")
+@router.get("/check")
 def list_scheduled_checks(url: str, token: Annotated[UserTokenData, Depends(user_token_data)]):
     tasks = application_context.scheduled_tasks.get_all_checks(
         token.user_guid, url)
     return tasks
 
 
-@router.post("")
+@router.post("/check")
 def create_scheduled_check(check_payload: CreateScheduledCheck, token: Annotated[UserTokenData, Depends(user_token_data)]):
     task = application_context.scheduled_tasks.create_check(
         token.user_guid, check_payload)
