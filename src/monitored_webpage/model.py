@@ -7,6 +7,7 @@ class MonitoredWebpage(BaseModel):
     guid: UUID4
     u_guid: UUID4
     url: str
+    screenshot_m_at: datetime | None = None
     c_at: datetime
 
     def to_db_item(self):

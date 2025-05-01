@@ -15,7 +15,7 @@ class ScheduledTasksService():
         return self._tasks.get_all_scheduled_checks(u_guid, url)
 
     def create_check(self, u_guid: str, payload: CreateScheduledCheck):
-        self._webpages.get(u_guid, payload.url)
+        webpage = self._webpages.get(u_guid, payload.url)
 
         already_scheduled_checks = self._tasks.get_all_scheduled_checks(
             u_guid, payload.url)
@@ -27,7 +27,7 @@ class ScheduledTasksService():
             url=payload.url,
             zones=payload.zones,
             check_string=payload.check_string,
-            fail_on_status=payload.fail_on_status,
+            accepted_status=payload.accepted_status,
             timeout=payload.timeout,
             save_screenshot=True
         )
@@ -36,6 +36,7 @@ class ScheduledTasksService():
             **payload.model_dump(),
             "guid": uuid4(),
             "u_guid": u_guid,
+            "w_guid": str(webpage.guid),
             "task_type": "CHECK",
             "c_at": datetime.now(timezone.utc),
             "configuration": check_configuration
@@ -52,6 +53,7 @@ class ScheduledTasksService():
             **payload.model_dump(),
             "guid": uuid4(),
             "u_guid": u_guid,
+            "w_guid": str(webpage.guid),
             "task_type": "AGGREGATE",
             "c_at": datetime.now(timezone.utc),
             "configuration": aggregate_configuration
