@@ -38,4 +38,15 @@ class UserAccountPersistence():
         return UserAccount.from_db_item(items[0])
 
     def delete(self, guid: str):
-        self.users.delete_item(Key={"guid": guid})
+        response = self.users.query(
+            KeyConditionExpression=Key("guid").eq(guid))
+
+        items = response.get("Items")
+
+        if len(items) > 0:
+            with self.users.batch_writer() as batch:
+                for item in items:
+                    batch.delete_item(Key={
+                        "guid": item.get("guid"),
+                        "s_key": item.get("s_key"),
+                    })

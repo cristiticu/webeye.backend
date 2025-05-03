@@ -54,7 +54,7 @@ class UserAccountService():
 
         self._users.persist(patched_account)
 
-        return account.to_partial_account()
+        return patched_account.to_partial_account()
 
     def delete(self, id: str):
         self._users.delete(id)
