@@ -17,16 +17,14 @@ def list_webpages(token: Annotated[UserTokenData, Depends(user_token_data)]):
     return webpages
 
 
-@router.get("/{webpage_guid}")
-def get_monitored_webpage(webpage_guid: str, token: Annotated[UserTokenData, Depends(user_token_data)]):
-    raise MonitoredWebpageNotFound("NOT IMPLEMENTED")
-    webpage = application_context.monitored_webpages.get(
-        token.user_guid, webpage_guid)
-    return webpage
-
-
 @router.post("")
 def create_monitored_webpage(webpage_payload: CreateMonitoredWebpage, token: Annotated[UserTokenData, Depends(user_token_data)]):
     webpage = application_context.monitored_webpages.create(
         token.user_guid, webpage_payload)
     return webpage
+
+
+@router.delete("")
+def delete_monitored_webpage(url: str, token: Annotated[UserTokenData, Depends(user_token_data)]):
+    application_context.monitored_webpages.delete(token.user_guid, url)
+    application_context.scheduled_tasks.delete_all_tasks(token.user_guid, url)

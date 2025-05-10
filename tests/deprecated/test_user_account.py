@@ -14,9 +14,9 @@ def mock_user_1():
         guid=uuid4(),
         email="test@email.com",
         password="1234",
-        first_name="First",
-        last_name="Last",
-        added_at=datetime.now(timezone.utc)
+        f_name="First",
+        l_name="Last",
+        c_at=datetime.now(timezone.utc)
     )
 
 
@@ -26,9 +26,9 @@ def mock_user_2():
         guid=uuid4(),
         email="test2@email.com",
         password="1234",
-        first_name="Second",
-        last_name="Last 2",
-        added_at=datetime(1999, 1, 1, 1, 1, 1, 1, timezone.utc)
+        f_name="Second",
+        l_name="Last 2",
+        c_at=datetime(1999, 1, 1, 1, 1, 1, 1, timezone.utc)
     )
 
 
@@ -41,8 +41,8 @@ def test_user_service_get_all():
 def test_user_service_get_one(mock_user_1):
     user = application_context.user_accounts.create(CreateUserAccount(email="test2@email.com",
                                                                             password="1234",
-                                                                            first_name="Second",
-                                                                            last_name="Last 2",))
+                                                                            f_name="Second",
+                                                                            l_name="Last 2",))
     read = application_context.user_accounts.get(str(user.guid))
 
     assert read != None

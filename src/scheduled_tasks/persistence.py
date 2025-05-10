@@ -36,3 +36,20 @@ class ScheduledTasksPersistence():
             raise ScheduledTaskNotFound()
 
         return ScheduledCheck.from_db_item(item)
+
+    def delete_scheduled_tasks(self, u_guid: str, type: str, url: str):
+        h_key = u_guid
+        s_key = f"{type}#{url}#"
+
+        response = self.tasks.query(KeyConditionExpression=Key(
+            "h_key").eq(h_key) & Key("s_key").begins_with(s_key))
+
+        items = response.get("Items")
+
+        if len(items) > 0:
+            with self.tasks.batch_writer() as batch:
+                for item in items:
+                    batch.delete_item(Key={
+                        "h_key": item.get("h_key"),
+                        "s_key": item.get("s_key")
+                    })

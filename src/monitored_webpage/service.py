@@ -4,7 +4,6 @@ import requests
 from monitored_webpage.exceptions import MonitoredWebpageAlreadyExists, MonitoredWebpageNotFound, UrlNotReachable
 from monitored_webpage.model import CreateMonitoredWebpage, MonitoredWebpage
 from monitored_webpage.persistence import MonitoredWebpagePersistence
-from user_account.exceptions import UserAccountNotFound
 from user_account.service import UserAccountService
 
 
@@ -49,3 +48,6 @@ class MonitoredWebpageService():
         self._webpages.persist(webpage)
 
         return webpage
+
+    def delete(self, u_guid: str, url: str):
+        self._webpages.delete(u_guid, url)

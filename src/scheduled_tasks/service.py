@@ -64,3 +64,7 @@ class ScheduledTasksService():
         self._tasks.persist(aggregate_task)
 
         return check_task
+
+    def delete_all_tasks(self, u_guid: str, url: str):
+        self._tasks.delete_scheduled_tasks(u_guid, "CHECK", url)
+        self._tasks.delete_scheduled_tasks(u_guid, "AGGREGATE", url)

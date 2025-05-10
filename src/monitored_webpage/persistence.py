@@ -28,3 +28,9 @@ class MonitoredWebpagePersistence():
             raise MonitoredWebpageNotFound()
 
         return MonitoredWebpage.from_db_item(item)
+
+    def delete(self, u_guid: str, url: str):
+        self.webpages.delete_item(Key={
+            "u_guid": u_guid,
+            "url": url
+        })

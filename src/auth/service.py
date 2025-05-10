@@ -57,7 +57,7 @@ class AuthService():
         logged_in_device = self._devices.get(user_guid, device_guid)
 
         if not token_context.verify(refresh_token, logged_in_device.refresh_token):
-            self._devices.delete(user_guid, device_guid)
+            self._devices.delete_token(user_guid, device_guid)
             raise CredentialsException(msg="Invalid credentials")
 
         new_access_token = create_access_token({"user_guid": str(user_guid)})
@@ -84,7 +84,7 @@ class AuthService():
         return self._devices.get_all(user_guid)
 
     def logout(self, user_guid: str, device_guid: str):
-        self._devices.delete(user_guid, device_guid)
+        self._devices.delete_token(user_guid, device_guid)
 
     def logout_all_sessions(self, user_guid: str):
-        self._devices.batch_delete(user_guid)
+        self._devices.batch_delete_tokens(user_guid)

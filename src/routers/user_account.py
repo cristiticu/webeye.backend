@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, BackgroundTasks
 from context import ApplicationContext
 from user_account.model import CreateUserAccount, UserAccountPatch
 
@@ -31,5 +31,13 @@ def update_user(guid: str, patch: UserAccountPatch):
 
 
 @router.delete("/{guid}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(guid: str):
-    application_context.user_accounts.delete(guid)
+def delete_user(guid: str, background_tasks: BackgroundTasks):
+    webpages = application_context.monitored_webpages.get_all(guid)
+
+    for webpage in webpages:
+        background_tasks.add_task(
+            application_context.monitored_webpages.delete, guid, webpage.url)
+        background_tasks.add_task(
+            application_context.scheduled_tasks.delete_all_tasks, guid, webpage.url)
+
+    background_tasks.add_task(application_context.user_accounts.delete, guid)

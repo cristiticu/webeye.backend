@@ -30,7 +30,7 @@ class AuthPersistence():
 
         return [LoggedInDevice.from_db_item(item) for item in items]
 
-    def batch_delete(self, user_guid: str):
+    def batch_delete_tokens(self, user_guid: str):
         devices = self.get_all(user_guid)
 
         if len(devices) > 0:
@@ -43,6 +43,6 @@ class AuthPersistence():
                         }
                     )
 
-    def delete(self, user_guid: str, guid: str):
+    def delete_token(self, user_guid: str, guid: str):
         self.users.delete_item(
             Key={"guid": user_guid, "s_key": f"TOKEN#{guid}"})
