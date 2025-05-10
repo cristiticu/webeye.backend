@@ -5,6 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from auth.dependencies import refresh_token_data, user_token_data
 from auth.model import RefreshTokenData, UserTokenData
 from context import ApplicationContext
+import settings
 
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
@@ -16,6 +17,7 @@ def authenticate(form_data: Annotated[OAuth2PasswordRequestForm, Depends(OAuth2P
     tokens = application_context.authentication.authenticate(
         form_data.username,
         form_data.password,
+        settings.AUTH_REFRESH_RETENTION_DAYS,
         request.headers["User-Agent"])
 
     return JSONResponse(status_code=status.HTTP_200_OK,

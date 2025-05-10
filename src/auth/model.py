@@ -20,6 +20,7 @@ class LoggedInDevice(BaseModel):
     refresh_token: str
     device_name: str
     last_login_at: datetime
+    ttl: int
 
     def to_db_item(self):
         return {
@@ -27,6 +28,7 @@ class LoggedInDevice(BaseModel):
             "s_key": f"TOKEN#{self.guid}",
             "refresh_token": self.refresh_token,
             "device_name": self.device_name,
+            "ttl": self.ttl,
             "last_login_at": self.last_login_at.isoformat().replace("+00:00", "Z")
         }
 

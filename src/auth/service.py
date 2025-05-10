@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 from auth.model import LoggedInDevice
 from auth.persistence import AuthPersistence
@@ -18,7 +18,7 @@ class AuthService():
         self._users = users_persistence
         self._devices = auth_persistence
 
-    def authenticate(self, email: str, password: str, device_name: str | None = None):
+    def authenticate(self, email: str, password: str, refresh_token_retention_days: int, device_name: str | None = None):
         try:
             user = self._users.get_by_email(email)
         except UserAccountNotFound:
@@ -41,6 +41,8 @@ class AuthService():
             user_guid=user.guid,
             refresh_token=token_context.hash(refresh_token),
             device_name=device_name if device_name != None else "Unknown Device",
+            ttl=int(
+                (datetime.now() + timedelta(days=refresh_token_retention_days)).timestamp()),
             last_login_at=datetime.now(timezone.utc)
         )
 
