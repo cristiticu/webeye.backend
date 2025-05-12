@@ -2,7 +2,8 @@ from datetime import datetime, timezone
 from uuid import uuid4
 from monitored_webpage.service import MonitoredWebpageService
 from scheduled_tasks.exceptions import ScheduledCheckAlreadyExists
-from scheduled_tasks.model import AggregationConfiguration, CreateScheduledCheck, ScheduledAggregation, ScheduledCheck, CheckConfiguration
+from scheduled_tasks.model import AggregationConfiguration, CreateScheduledCheck, ScheduledAggregation, ScheduledCheck, CheckConfiguration, ScheduledCheckPatch
+
 from scheduled_tasks.persistence import ScheduledTasksPersistence
 
 
@@ -32,9 +33,11 @@ class ScheduledTasksService():
             save_screenshot=True
         )
 
+        guid = uuid4()
+
         check_task_payload = {
             **payload.model_dump(),
-            "guid": uuid4(),
+            "guid": guid,
             "u_guid": u_guid,
             "w_guid": str(webpage.guid),
             "task_type": "CHECK",
@@ -51,7 +54,7 @@ class ScheduledTasksService():
 
         aggregate_task_payload = {
             **payload.model_dump(),
-            "guid": uuid4(),
+            "guid": guid,
             "u_guid": u_guid,
             "w_guid": str(webpage.guid),
             "task_type": "AGGREGATE",
@@ -64,6 +67,40 @@ class ScheduledTasksService():
         self._tasks.persist(aggregate_task)
 
         return check_task
+
+    def update_check(self, u_guid: str, guid: str, patch: ScheduledCheckPatch):
+        scheduled_check: ScheduledCheck = self._tasks.get_scheduled_task(
+            u_guid, patch.url, guid, 'CHECK')
+        scheduled_aggregation: ScheduledAggregation = self._tasks.get_scheduled_task(
+            u_guid, patch.url, guid,  'AGGREGATE')
+
+        patched_scheduled_check = ScheduledCheck.model_validate(
+            {
+                **scheduled_check.model_dump(),
+                "configuration": {
+                    **scheduled_check.configuration.model_dump(),
+                    **patch.model_dump(exclude_none=True)
+                },
+                **patch.model_dump(exclude_none=True)
+            }
+        )
+
+        patched_scheduled_aggregation = ScheduledAggregation.model_validate(
+            {
+                **scheduled_aggregation.model_dump(),
+                **patch.model_dump(exclude_none=True)
+            }
+        )
+
+        self._tasks.persist(patched_scheduled_check)
+        self._tasks.persist(patched_scheduled_aggregation)
+
+        return patched_scheduled_check
+
+    def delete_scheduled_check(self, u_guid: str, url: str, guid: str):
+        with self._tasks.batch_writer() as batch:
+            batch.delete(u_guid, url, guid, 'CHECK')
+            batch.delete(u_guid, url, guid, 'AGGREGATE')
 
     def delete_all_tasks(self, u_guid: str, url: str):
         self._tasks.delete_scheduled_tasks(u_guid, "CHECK", url)

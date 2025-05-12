@@ -15,6 +15,16 @@ class ScheduledTask(BaseModel, Generic[ConfigurationType]):
     configuration: ConfigurationType
     c_at: datetime
 
+    @classmethod
+    def from_db_item(cls, item: Mapping):
+        task_type = item["s_key"].split("#")[0]
+        model_cls = TASK_TYPE_TO_CLASS.get(task_type)
+
+        if model_cls is None:
+            raise ValueError(f"Unsupported task_type: {task_type}")
+
+        return model_cls.from_db_item(item)
+
 
 class CheckConfiguration(BaseModel):
     url: str
@@ -109,3 +119,19 @@ class CreateScheduledCheck(BaseModel):
     check_string: str | None = None
     accepted_status: list[str] = ['2xx', '3xx']
     timeout: int = 20000
+
+
+class ScheduledCheckPatch(BaseModel):
+    url: str
+    interval: Literal["1m", "2m", "5m", "10m", "15m", "30m"] | None = None
+    days: Literal["all", "weekend", "weekdays"] | None = None
+    zones: list[Literal["america", "europe", "asia_pacific"]] | None = None
+    check_string: str | None = None
+    accepted_status: list[str] = ['2xx', '3xx']
+    timeout: int = 20000
+
+
+TASK_TYPE_TO_CLASS = {
+    "CHECK": ScheduledCheck,
+    "AGGREGATE": ScheduledAggregation
+}
