@@ -50,6 +50,5 @@ class UserAccountPatch(BaseModel):
     model_config = ConfigDict(revalidate_instances='always')
 
     email: str | None = None
-    password: str | None = None
     f_name: str | None = None
     l_name: str | None = None

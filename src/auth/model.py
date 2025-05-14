@@ -41,3 +41,8 @@ class LoggedInDevice(BaseModel):
             "user_guid": item["guid"],
         }
         return LoggedInDevice.model_validate(item_payload)
+
+
+class ChangePassword(BaseModel):
+    old_password: str
+    new_password: str

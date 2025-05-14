@@ -3,9 +3,8 @@ from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from auth.dependencies import refresh_token_data, user_token_data
-from auth.model import RefreshTokenData, UserTokenData
+from auth.model import ChangePassword, RefreshTokenData, UserTokenData
 from context import ApplicationContext
-import settings
 from shared.utils import parse_user_agent
 
 
@@ -20,7 +19,6 @@ def authenticate(form_data: Annotated[OAuth2PasswordRequestForm, Depends(OAuth2P
     tokens = application_context.authentication.authenticate(
         form_data.username,
         form_data.password,
-        settings.AUTH_REFRESH_RETENTION_DAYS,
         browser)
 
     return JSONResponse(status_code=status.HTTP_200_OK,
@@ -62,6 +60,20 @@ def logout_all_sessions(token: Annotated[UserTokenData, Depends(user_token_data)
     application_context.authentication.logout_all_sessions(token.user_guid)
 
     return JSONResponse(status_code=status.HTTP_204_NO_CONTENT, content="No content")
+
+
+@router.post("/change-password")
+def change_password(payload: ChangePassword, token: Annotated[UserTokenData, Depends(user_token_data)]):
+    tokens = application_context.authentication.change_password(
+        token.user_guid, payload.old_password, payload.new_password)
+
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                        content={
+                            "access_token": tokens["access_token"],
+                            "refresh_token": tokens["refresh_token"],
+                            "token_type": "bearer"
+                        }
+                        )
 
 
 @router.get("/sessions")

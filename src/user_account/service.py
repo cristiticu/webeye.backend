@@ -44,8 +44,6 @@ class UserAccountService():
     def update(self, id: str, patch: UserAccountPatch):
         account = self._users.get(id)
 
-        patch.password = pwd_context.hash(
-            patch.password) if patch.password else None
         patched_account = UserAccount.model_validate(
             {
                 **account.model_dump(),

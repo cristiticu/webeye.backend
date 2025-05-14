@@ -1,9 +1,12 @@
 from datetime import datetime, timedelta, timezone
-from uuid import uuid4
+from uuid import UUID, uuid4
+
+from pydantic import UUID4
 from auth.model import LoggedInDevice
 from auth.persistence import AuthPersistence
 from auth.utils import create_access_token
 from exceptions import CredentialsException
+import settings
 from user_account.exceptions import UserAccountNotFound
 from passlib.context import CryptContext
 
@@ -18,31 +21,23 @@ class AuthService():
         self._users = users_persistence
         self._devices = auth_persistence
 
-    def authenticate(self, email: str, password: str, refresh_token_retention_days: int, device_name: str | None = None):
-        try:
-            user = self._users.get_by_email(email)
-        except UserAccountNotFound:
-            raise CredentialsException(msg="Invalid credentials")
-
-        if not pwd_context.verify(password, user.password):
-            raise CredentialsException(msg="Invalid credentials")
-
+    def create_tokens(self, user_guid: UUID4, device_name: str | None = None):
         device_guid = uuid4()
 
-        access_token = create_access_token({"user_guid": str(user.guid)})
+        access_token = create_access_token({"user_guid": str(user_guid)})
         refresh_token = create_access_token(
             {
-                "user_guid": str(user.guid),
+                "user_guid": str(user_guid),
                 "device_guid": str(device_guid)
             }, 60 * 24)
 
         device = LoggedInDevice(
             guid=device_guid,
-            user_guid=user.guid,
+            user_guid=user_guid,
             refresh_token=token_context.hash(refresh_token),
             device_name=device_name if device_name != None else "Unknown Device",
             ttl=int(
-                (datetime.now() + timedelta(days=refresh_token_retention_days)).timestamp()),
+                (datetime.now() + timedelta(days=settings.AUTH_REFRESH_RETENTION_DAYS)).timestamp()),
             last_login_at=datetime.now(timezone.utc)
         )
 
@@ -52,6 +47,17 @@ class AuthService():
             "access_token": access_token,
             "refresh_token": refresh_token
         }
+
+    def authenticate(self, email: str, password: str, device_name: str | None = None):
+        try:
+            user = self._users.get_by_email(email)
+        except UserAccountNotFound:
+            raise CredentialsException(msg="Invalid credentials")
+
+        if not pwd_context.verify(password, user.password):
+            raise CredentialsException(msg="Invalid credentials")
+
+        return self.create_tokens(user.guid, device_name)
 
     def refresh(self, refresh_token: str, user_guid: str, device_guid: str):
         logged_in_device = self._devices.get(user_guid, device_guid)
@@ -79,6 +85,21 @@ class AuthService():
             "access_token": new_access_token,
             "refresh_token": new_refresh_token
         }
+
+    def change_password(self, user_guid: str, old_password: str, new_password: str, device_name: str | None = None):
+        user = self._users.get(user_guid)
+
+        if not pwd_context.verify(old_password, user.password):
+            raise CredentialsException(msg="Invalid credentials")
+
+        new_hash = pwd_context.hash(new_password)
+        user.password = new_hash
+
+        self._users.persist(user)
+
+        self.logout_all_sessions(user_guid)
+
+        return self.create_tokens(UUID(user_guid), device_name)
 
     def get_logged_in_sessions(self, user_guid: str):
         return self._devices.get_all(user_guid)
