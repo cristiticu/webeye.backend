@@ -79,7 +79,8 @@ class ScheduledTasksService():
                 **scheduled_check.model_dump(),
                 "configuration": {
                     **scheduled_check.configuration.model_dump(),
-                    **patch.model_dump(exclude_none=True)
+                    **patch.model_dump(exclude_none=True),
+                    "check_string": patch.check_string
                 },
                 **patch.model_dump(exclude_none=True)
             }

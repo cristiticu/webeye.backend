@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from auth.dependencies import user_token_data
 from auth.model import UserTokenData
@@ -11,8 +11,13 @@ application_context = ApplicationContext()
 
 
 @router.get("")
-def list_events(url: str, start_at: str, end_at: str, token: Annotated[UserTokenData, Depends(user_token_data)]):
-    return application_context.monitoring_events.get_events(token.user_guid, url, start_at, end_at)
+def get_event(url: str, c_at: str, token: Annotated[UserTokenData, Depends(user_token_data)]):
+    return application_context.monitoring_events.get_event(token.user_guid, url, c_at)
+
+
+@router.get("/list")
+def list_events(url: str, token: Annotated[UserTokenData, Depends(user_token_data)], last_evaluated_key: str = Query(default=None)):
+    return application_context.monitoring_events.get_events(token.user_guid, url, last_evaluated_key)
 
 
 @router.get("/downtime")

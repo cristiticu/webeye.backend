@@ -12,12 +12,14 @@ class MonitoringEventsService():
     def get_regions_status(self, u_guid: str, url: str):
         return self._events.get_regions_status(u_guid, url)
 
-    def get_events(self, u_guid: str, url: str, start_at: str, end_at: str):
+    def get_event(self, u_guid: str, url: str, c_at: str):
+        return self._events.get_event(u_guid, url, c_at)
+
+    def get_events(self, u_guid: str, url: str, last_evaluated_key: str | None = None):
         return self._events.get_events(
             u_guid,
             url,
-            start_at,
-            end_at
+            last_evaluated_key
         )
 
     def get_downtimes(self, u_guid: str, url: str, start_at: str, end_at: str):
