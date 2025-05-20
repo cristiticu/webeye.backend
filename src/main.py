@@ -1,3 +1,4 @@
+from mangum import Mangum
 import settings
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -34,3 +35,5 @@ app.include_router(scheduled_tasks_router)
 app.include_router(monitoring_events_router)
 
 register_error_handlers(app)
+
+lambda_handler = Mangum(app, lifespan="off")
