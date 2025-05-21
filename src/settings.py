@@ -1,3 +1,4 @@
+import json
 from dotenv import load_dotenv
 import os
 
@@ -5,6 +6,8 @@ load_dotenv('.env')
 
 ENVIRONMENT = os.environ.get('ENVIRONMENT')
 AWS_REGION_NAME = os.environ.get('AWS_REGION_NAME')
+CORS_ORIGINS = json.loads(
+    os.environ.get('CORS_ORIGINS', '["https://webeye.cristit.icu"]'))
 
 AUTH_REFRESH_RETENTION_DAYS = int(
     os.environ.get('AUTH_REFRESH_RETENTION_DAYS', 1))

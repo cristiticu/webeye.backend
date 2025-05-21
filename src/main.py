@@ -17,8 +17,9 @@ app = FastAPI(title='webpage monitoring',
               )
 
 app.add_middleware(CORSMiddleware,
-                   allow_origins=['*'],
-                   allow_methods=['GET', 'POST', 'DELETE', 'PATCH'],
+                   allow_origins=settings.CORS_ORIGINS,
+                   allow_methods=['GET', 'HEAD', 'OPTIONS',
+                                  'POST', 'DELETE', 'PATCH'],
                    allow_credentials=True,
                    allow_headers=['*']
                    )
